@@ -9,6 +9,7 @@ app.set("views", path.join(__dirname, "views"));
 app.get("/", (req, res) => {
   var q = url.parse(req.url, true).query;
   //changer le chemin de fichier vers celui que tu veux lire
+  
   fs.readdir("./docs/", (err, docs) =>{
     if(err)
     {
@@ -29,7 +30,8 @@ app.get("/opendoc", (req, res) =>{
   res.statusCode = 200;
   var q = url.parse(req.url, true).query;
   //pareil pour l'envoi du fichier
-  res.sendFile("/var/www/devph/docs/" + q.name);
+  //res.sendFile("/var/www/devph/docs/" + q.name);
+  res.sendFile("C:/Users/Matthieu/Desktop/Web/devph/docs/" + q.name);
 })
 
 app.use((req, res) => {
