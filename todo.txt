@@ -1,0 +1,2 @@
+recherche récursive, affichage max 20/50/tout espace entre les liens
+Vue arboressence, mode explorateur, fichier css modifications

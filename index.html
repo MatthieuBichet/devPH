@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script type="text/jasrc="./app.js"></script>
+<input type="text" value="recherche">
+<button onclick="generateTable()"> Rechercher</button>
+<a href="#" onclick="open('a.pdf', '_blank', 'fullscreen=yes'); return false;">MyPDF</a>
+<script type="text/javascript">
+function generateTable(){
+    //creat table elements
+    const tbl = document.createElement("table");
+    const tblBody = document.createElement("tbody");
+    //initialize fs to the good folder
+    //for each file found, create a hyperlink to the file stocked in a table
+    files.forEach(element=> {
+        var a = document.createElement('a');
+        const row = document.createElement('tr');
+        const cell = document.createElement("td")
+        const cellText = document.createTextNode(element);
+        a.appendChild(cellText);
+        a.title = element;
+        a.href = "/var/www/devph/" + element;
+        cell.appendChild(a);
+        row.appendChild(cell);
+        tblBody.appendChild(row); 
+    });
+    tbl.appendChild(tblBody);
+    document.body.appendChild(tbl);
+    </script>
+
+</body>
+
+</html>

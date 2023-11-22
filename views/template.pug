@@ -1,0 +1,19 @@
+doctype html
+html
+    head
+        <meta name="viewport" content="width=device-width">
+        style
+            include app.css
+    body
+        <form id="form1" name="form1" method="get" action="/">
+            <input type="text" class="custom" size="32" name="name" id="INPUT1">
+            <input type="submit" value="Recherche">
+        </form>
+        
+		//forme les colonnes avec les informations exportées du serveur
+        div
+            for doc in docs
+                a(href='opendoc/?name=' + doc) #{doc}<br>
+	
+ 
+
