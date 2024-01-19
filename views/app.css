@@ -18,6 +18,12 @@ input[type=submit]{
     height: auto;
     font-size: 2rem;
 }
+select{
+    width: 98%;
+    font-size: 2rem;
+    margin-left: 1%;
+    height: auto;
+}
 
 form{
     margin-left: 1vw;
