@@ -9,49 +9,61 @@ app.set('view engine', 'pug');
 app.set("views", path.join(__dirname, "views"));
 app.locals.basedir = path.join(__dirname, 'views');
 var cheminFichier = config.get("cheminFichier");
-var docs = getFiles(cheminFichier);            //récup des fichiers async
-var folders = getFolders(cheminFichier);  
-var folderPaths =[];
+var cheminFichierNor = path.normalize(cheminFichier);
+var docsPR = [];           
+var foldersPR = [];  
+var folderLib =[];
 var docLib =[];
+initDB();
 
 app.get("", (req, res) => {
   
-  var q = url.parse(req.url, true).query;
-try{
-  //array des dossiers traités
-  var folderPaths = new Array();
-  //array des fichiers traités
-  var docLib = new Array();
+var queryName = url.parse(req.url, true).query.name;
+var queryFolder = url.parse(req.url, true).query.folder;
+var readDoc= [];
+var readFolder = folderLib;
+var readDocsPR =[];
 
-     //récup des dossiers async
-  docs.then(function(docsResult)
-  {
-    folders.then(function(folderResult)
+try{
+
+    if(queryFolder != cheminFichierNor && typeof queryFolder ==='string')
     {
-      for(const folder of folderResult){
-      folderPaths.push(folder.path + (folder.name));
+        /*for(const doc of docsPR)
+        {
+          if(doc.path == queryFolder)
+          {
+            readDoc.push(doc.name);
+          }
+
+        
+        }*/
+        readDocsPR = docsPR;
+        readDoc = docsPR.filter(el => {return el.path == queryFolder})
+        readDoc = readDoc.map(word =>{return word.name.toLowerCase();});
+        
+      
     }
-    for(const doc of docsResult)
+    else
     {
-      docLib.push(doc.name);
+      readDoc = docLib;
+
     }
-    docLib = docLib.map(word =>{return word.toLowerCase();});
-    if(typeof q.name ==='string')
-  {
-    docLib = docLib.filter(word=> word.includes(q.name.toLowerCase()));
-  }
-  else
-  {
-    
-  }
+    if(typeof queryName ==='string')
+    {
+      readDoc = readDoc.filter(word=> word.includes(queryName.toLowerCase()));
+    }
+    else
+    {
+      
+    }
+    //if(typeof )
     //verifier que la query soit non nulle
-  res.render("template", {docs: docLib, folders: folderPaths});
-  res.statusCode = 200;
-  });
-  });
-  }
+    res.render("template", {docs: readDoc, folders: readFolder});
+    res.statusCode = 200;
+
+    }
 catch(error)
-  {
+   {
     console.log(error.toString());
     res.end(error);
     res.statusCode = 404;
@@ -74,10 +86,39 @@ app.get("/opendoc", (req, res) =>{
 
   
 })*/
+function initDB()
+{
+  folderLib.length=0;
+  docLib.length=0;
+  var docs = getFiles(cheminFichier);            //récup des fichiers async
+  var folders = getFolders(cheminFichier);
+  docs.then(function(docsResult)
+  {
+    folders.then(function(folderResult)
+    {
+      docsPR = docsResult;
+      foldersPR = folderResult;
+      folderLib.push(path.normalize(cheminFichier));
+      for(const folder of folderResult)
+      {
+        folderLib.push(path.join(folder.path.normalize() + (folder.name)));
+      }
+    
+    for(const doc of docsResult)
+    {
+      docLib.push(doc.name);
+    }
+    for(const doc of docsPR)
+    {
+      doc.path = path.normalize(doc.path);
+    }
+    docLib = docLib.map(word =>{return word.toLowerCase();});
+  });
+});
 
+}
 app.get("/refresh", (req, res)=>{
-  docs = getFiles(cheminFichier);            //récup des fichiers async
-  folders = getFolders(cheminFichier);
+  initDB();
   res.redirect("/");
 })
 
@@ -93,17 +134,18 @@ app.listen(3000, () => {
 
 async function getFiles(dir) {
   return await fsp.readdir(dir, { recursive: true, withFileTypes: true }).then
-  ((docs) =>{
-  docs = docs.filter(dirent => dirent.isFile());
-  return docs;
+  ((recherche) =>{
+  recherche = recherche.filter(dirent => dirent.isFile());
+  return recherche;
 })
 }
 
 async function getFolders(dir){
   return await fsp.readdir(dir, { recursive: true, withFileTypes: true }).then
-  ((folders) =>{
-    folders = folders.filter(dirent => dirent.isDirectory());
-    return folders;
+  ((recherche) =>{
+    recherche = recherche.filter(dirent => dirent.isDirectory());
+    return recherche;
+    
   })
   }
 

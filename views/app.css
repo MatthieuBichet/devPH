@@ -18,13 +18,22 @@ input[type=submit]{
     height: auto;
     font-size: 2rem;
 }
+
 select{
-    width: 98%;
+    width: 60%;
     font-size: 2rem;
-    margin-left: 1%;
     height: auto;
 }
+#refreshButton
+{   
+    position: absolute;
+    top: 10px;
+    margin-right: 1%;
+    
+    height: auto;
+    width: 25%;
 
+}
 form{
     margin-left: 1vw;
     font-size: 3rem;
