@@ -1,4 +1,5 @@
 const express = require("express");
+const config = require('config');
 var fsp = require('fs/promises');
 var url = require('url');
 const app = express();
@@ -7,9 +8,13 @@ const { get } = require("http");
 app.set('view engine', 'pug');
 app.set("views", path.join(__dirname, "views"));
 app.locals.basedir = path.join(__dirname, 'views');
-const cheminFichier ="C:/Users/Matthieu/Desktop/Web/devph/docs/";
+var cheminFichier = config.get("cheminFichier");
+var docs = getFiles(cheminFichier);            //récup des fichiers async
+var folders = getFolders(cheminFichier);  
+var folderPaths =[];
+var docLib =[];
 
-app.get("/", (req, res) => {
+app.get("", (req, res) => {
   
   var q = url.parse(req.url, true).query;
 try{
@@ -18,8 +23,7 @@ try{
   //array des fichiers traités
   var docLib = new Array();
 
-  var docs = getFiles(cheminFichier, q);            //récup des fichiers async
-  var folders = getFolders(cheminFichier, q);       //récup des dossiers async
+     //récup des dossiers async
   docs.then(function(docsResult)
   {
     folders.then(function(folderResult)
@@ -30,17 +34,21 @@ try{
     for(const doc of docsResult)
     {
       docLib.push(doc.name);
-      docLib = docLib.map(word =>{return word.toLowerCase();});
-      docLib = docLib.filter(word=> word.includes(q.name.toLowerCase()));
     }
+    docLib = docLib.map(word =>{return word.toLowerCase();});
+    if(typeof q.name ==='string')
+  {
+    docLib = docLib.filter(word=> word.includes(q.name.toLowerCase()));
+  }
+  else
+  {
+    
+  }
     //verifier que la query soit non nulle
   res.render("template", {docs: docLib, folders: folderPaths});
   res.statusCode = 200;
   });
   });
-
-
-
   }
 catch(error)
   {
@@ -48,10 +56,6 @@ catch(error)
     res.end(error);
     res.statusCode = 404;
   }
-
-
-
-
 })
 
 
@@ -64,14 +68,18 @@ app.get("/opendoc", (req, res) =>{
   res.sendFile(cheminFichier + q.name);
 })
 
-app.get("/folderView", (req, res) =>{
+/*app.get("/folderView", (req, res) =>{
   res.statusCode=200;
   //var q = ;
 
   
+})*/
+
+app.get("/refresh", (req, res)=>{
+  docs = getFiles(cheminFichier);            //récup des fichiers async
+  folders = getFolders(cheminFichier);
+  res.redirect("/");
 })
-
-
 
 app.use((req, res) => {
     res.statusCode = 404;
@@ -83,28 +91,7 @@ app.listen(3000, () => {
     console.log("Application started on port 3000");
 });
 
-
-
-/*const getFileList = async (dirName) => {
-  let files = [];
-  const items = fs.readdir(dirName, { withFileTypes: true });
-
-  for (const item of items) {
-      if (item.isDirectory()) {
-          files = [
-              ...files,
-              ...(await getFileList(`${dirName}/${item.name}`)),
-          ];
-      } else {
-          files.push(`${dirName}/${item.name}`);
-      }
-  }
-
-  return files;
-};*/
-
-
-async function getFiles(dir, q) {
+async function getFiles(dir) {
   return await fsp.readdir(dir, { recursive: true, withFileTypes: true }).then
   ((docs) =>{
   docs = docs.filter(dirent => dirent.isFile());
@@ -112,7 +99,7 @@ async function getFiles(dir, q) {
 })
 }
 
-async function getFolders(dir, q){
+async function getFolders(dir){
   return await fsp.readdir(dir, { recursive: true, withFileTypes: true }).then
   ((folders) =>{
     folders = folders.filter(dirent => dirent.isDirectory());
