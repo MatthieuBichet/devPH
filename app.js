@@ -8,8 +8,14 @@ const { get } = require("http");
 app.set('view engine', 'pug');
 app.set("views", path.join(__dirname, "views"));
 app.locals.basedir = path.join(__dirname, 'views');
+const { platform } = process;
+const locale = path[platform === `win32` ? `win32` : `posix`];
+
+
 var cheminFichier = config.get("cheminFichier");
-var cheminFichierNor = path.normalize(cheminFichier);
+var cheminFichierNor = cheminFichier.split(path.sep).join(locale.sep);
+
+
 var docsPR = [];           
 var foldersPR = [];  
 var folderLib =[];
@@ -23,6 +29,7 @@ var queryFolder = url.parse(req.url, true).query.folder;
 var readDoc= [];
 var readFolder = folderLib;
 var readDocsPR =[];
+
 
 try{
 
@@ -38,27 +45,26 @@ try{
         
         }*/
         readDocsPR = docsPR;
-        readDoc = docsPR.filter(el => {return el.path == queryFolder})
-        readDoc = readDoc.map(word =>{return word.name.toLowerCase();});
+        readDocsPR = readDocsPR.filter(el => el.path == queryFolder);
+        readDocsPR.forEach(el => el.name.toLowerCase());
+        //readDoc = docsPR.filter(el => {return el.path == queryFolder})
+        //readDoc = readDoc.map(word =>{return word.name.toLowerCase();});
         
       
     }
     else
     {
-      readDoc = docLib;
+      readDocsPR = docsPR;
 
     }
     if(typeof queryName ==='string')
     {
-      readDoc = readDoc.filter(word=> word.includes(queryName.toLowerCase()));
-    }
-    else
-    {
-      
+      readDocsPR = readDocsPR.filter(word=> word.name.includes(queryName.toLowerCase()));
+
     }
     //if(typeof )
     //verifier que la query soit non nulle
-    res.render("template", {docs: readDoc, folders: readFolder});
+    res.render("template", {docs: readDocsPR, folders: readFolder, nameSearch: queryName, folderSearch: queryFolder});
     res.statusCode = 200;
 
     }
@@ -75,9 +81,11 @@ catch(error)
 app.get("/opendoc", (req, res) =>{
   res.statusCode = 200;
   var q = url.parse(req.url, true).query;
-  //pareil pour l'envoi du fichier
-  //res.sendFile("/var/www/devph/docs/" + q.name);
-  res.sendFile(cheminFichier + q.name);
+  if(q.path.charAt(q.path.length-1)!=locale.sep)
+        {
+          q.path += locale.sep;
+        }
+  res.sendFile(q.path + q.name);
 })
 
 /*app.get("/folderView", (req, res) =>{
@@ -98,10 +106,15 @@ function initDB()
     {
       docsPR = docsResult;
       foldersPR = folderResult;
-      folderLib.push(path.normalize(cheminFichier));
+      folderLib.push(cheminFichierNor);
       for(const folder of folderResult)
       {
-        folderLib.push(path.join(folder.path.normalize() + (folder.name)));
+        folder.path = folder.path.split(path.sep).join(locale.sep);
+        if(folder.path.charAt(folder.path.length-1)!=locale.sep)
+        {
+          folder.path += locale.sep;
+        }
+        folderLib.push(path.join(folder.path + (folder.name)));
       }
     
     for(const doc of docsResult)
@@ -110,7 +123,7 @@ function initDB()
     }
     for(const doc of docsPR)
     {
-      doc.path = path.normalize(doc.path);
+      doc.path = doc.path.split(path.sep).join(locale.sep);
     }
     docLib = docLib.map(word =>{return word.toLowerCase();});
   });

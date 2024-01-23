@@ -10,8 +10,9 @@ html
         <form id="form1" name="form1" method="get" action="/">
             <select name="folder" id="folder_select">
                 for folder in folders
-                    option(value=folder) #{folder}
-            <input type="text" class="custom" size="32" name="name" id="INPUT1">
+                    option(value=folder selected=(folderSearch==folder)) #{folder}
+                folder_select.
+            input(type="text" class="custom" size="32" name="name" id="INPUT1" value=nameSearch)
             <input type="submit" value="Recherche">
         </form>
         <form id="refreshForm" name="refresh" method="get" action="/refresh">
@@ -20,6 +21,6 @@ html
         
         div
             for doc in docs
-                a(href='opendoc/?name=' + doc) #{doc}<br>
+                a(href='opendoc/?name=' + doc.name +'&path=' + doc.path) #{doc.name}<br>
 
         

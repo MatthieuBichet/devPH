@@ -2,7 +2,7 @@ html, body {
     width: 100%;
     min-width: 1000px;
     height: auto;
-    margin: 0;
+    margin: 0em;
     padding: 0;
     font-size: 100%;
 }
@@ -14,9 +14,11 @@ input[type=text]{
 
 }
 input[type=submit]{
-    width: 25%;
-    height: auto;
+    position: relative;
+    left: 0;
+    width: 15em;  height: auto;
     font-size: 2rem;
+    float: right;
 }
 
 select{
@@ -26,13 +28,7 @@ select{
 }
 #refreshButton
 {   
-    position: absolute;
-    top: 10px;
-    margin-right: 1%;
-    
-    height: auto;
-    width: 25%;
-
+    top: ;
 }
 form{
     margin-left: 1vw;
