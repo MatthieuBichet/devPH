@@ -1,5 +1,6 @@
 const express = require("express");
 const config = require('config');
+process.env["NODE_CONFIG_DIR"] = __dirname;
 var fsp = require('fs/promises');
 var url = require('url');
 const app = express();
