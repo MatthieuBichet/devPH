@@ -39,7 +39,6 @@ try{
     {
         readDocsPR = docsPR;
         readDocsPR = readDocsPR.filter(el => el.path == queryFolder);
-        readDocsPR.forEach(el => el.name.toLowerCase());
     }
     else
     {
@@ -49,7 +48,8 @@ try{
     //filtrage par nom de fichier
     if(typeof queryName ==='string')
     {
-      readDocsPR = readDocsPR.filter(word=> word.name.includes(queryName.toLowerCase()));
+      //var nameLowerCase = readDocsPR.name.toLowerCase();
+      readDocsPR = readDocsPR.filter(word=> word.name.toLowerCase().includes(queryName.toLowerCase()));
 
     }
     //envoi des résultats de recherche
