@@ -1,6 +1,6 @@
 const express = require("express");
+process.env["NODE_CONFIG_DIR"] = __dirname + "/config/";
 const config = require('config');
-process.env["NODE_CONFIG_DIR"] = __dirname;
 var fsp = require('fs/promises');
 var url = require('url');
 const app = express();
@@ -11,6 +11,7 @@ app.set("views", path.join(__dirname, "views"));
 app.locals.basedir = path.join(__dirname, 'views');
 const { platform } = process;
 const locale = path[platform === `win32` ? `win32` : `posix`];
+
 
 //cheminFichier = variable de base des documents
 var cheminFichier = config.get("cheminFichier");
