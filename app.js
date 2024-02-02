@@ -22,6 +22,8 @@ var docsPR = [];    //dirent array des fichiers du système de docs
 var foldersPR = []; //dirent array des dossiers du système de docs
 var folderLib =[];  //string array des noms de dossier du système de docs
 var docLib =[];     //string array des noms de fichiers du sytème de docs
+var extList =[];    //list des extensions
+extList.push("off");
 initDB();
 
 app.get("", (req, res) => {
@@ -30,9 +32,11 @@ app.get("", (req, res) => {
 //récupération des paramètres de recherche
 var queryName = url.parse(req.url, true).query.name;
 var queryFolder = url.parse(req.url, true).query.folder;
+var queryExt = url.parse(req.url, true).query.ext;
 //variables de travail
 var readFolder = folderLib; //array des dossiers manipulable
 var readDocsPR =[];         //array des fichiers manipulable
+queryExt
 
 //filtrage via paramètre de dossier / nom de fichier
 try{
@@ -54,8 +58,12 @@ try{
       readDocsPR = readDocsPR.filter(word=> word.name.toLowerCase().includes(queryName.toLowerCase()));
 
     }
+    if(typeof queryExt ==='string' && queryExt != "off")
+    {
+      readDocsPR = readDocsPR.filter(word => path.extname(word.name).includes(queryExt));
+    }
     //envoi des résultats de recherche
-    res.render("template", {docs: readDocsPR, folders: readFolder, nameSearch: queryName, folderSearch: queryFolder});
+    res.render("template", {docs: readDocsPR, folders: readFolder, nameSearch: queryName, folderSearch: queryFolder, exts: extList, extSearch: queryExt});
     res.statusCode = 200;
 
     }
@@ -66,6 +74,8 @@ catch(error)
     res.statusCode = 404;
   }
 })
+
+
 
 
 //requête d'ouverture de fichier
@@ -123,8 +133,10 @@ function initDB()
     for(const doc of docsPR)
     {
       doc.path = doc.path.split(path.sep).join(locale.sep);
+      extList.indexOf(path.extname(doc.name)) === -1 ? extList.push(path.extname(doc.name)): null;
     }
     docLib = docLib.map(word =>{return word.toLowerCase();});
+    
   });
 });
 }
