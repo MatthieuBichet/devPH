@@ -36,7 +36,6 @@ var queryExt = url.parse(req.url, true).query.ext;
 //variables de travail
 var readFolder = folderLib; //array des dossiers manipulable
 var readDocsPR =[];         //array des fichiers manipulable
-queryExt
 
 //filtrage via paramètre de dossier / nom de fichier
 try{
@@ -60,7 +59,7 @@ try{
     }
     if(typeof queryExt ==='string' && queryExt != "off")
     {
-      readDocsPR = readDocsPR.filter(word => path.extname(word.name).includes(queryExt));
+      readDocsPR = readDocsPR.filter(word => path.extname(word.name).toLowerCase().includes(queryExt));
     }
     //envoi des résultats de recherche
     res.render("template", {docs: readDocsPR, folders: readFolder, nameSearch: queryName, folderSearch: queryFolder, exts: extList, extSearch: queryExt});
@@ -133,7 +132,7 @@ function initDB()
     for(const doc of docsPR)
     {
       doc.path = doc.path.split(path.sep).join(locale.sep);
-      extList.indexOf(path.extname(doc.name)) === -1 ? extList.push(path.extname(doc.name)): null;
+      extList.indexOf(path.extname(doc.name)) === -1 ? extList.push(path.extname(doc.name).toLowerCase()): null;
     }
     docLib = docLib.map(word =>{return word.toLowerCase();});
     
