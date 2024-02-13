@@ -7,27 +7,38 @@ html
     body
         
         <div id="parent">
-            <form id="form1" name="form1" method="get" action="/">
-                <select name="folder" id="folder_select">
+            <form id="form1" name="form1" method="GET" action="/">
+                select(name="folder" id="folder_select" onchange="SubmitForm('form1')")
                     for folder in folders
                         option(value=folder selected=(folderSearch==folder)) #{folder}
                 input(type="text" class="custom" size="32" name="name" id="INPUT1" value=nameSearch)
-                <select name="ext" id="ext_select">
+                <select name="ext" id="ext_select" onchange="SubmitForm('form1')">
                     for ext in exts
                         option(value=ext selected=(extSearch==ext)) #{ext}
-                <input type="submit" value="Recherche" id="submit">
+                <input type="submit" value="Recherche" id="submitbutton">
 
             </form>
             <form id="refreshForm" name="refresh" method="get" action="/refresh">
                 <input type="submit" value="Actualiser" id="refreshButton">
             </form>
         </div>
+        
 
         
         
         div(id="doclisting")
             for doc in docs
                 a(href='opendoc/?name=' + doc.name +'&path=' + doc.path) #{doc.name}<br>
+    script.
+        function SubmitForm(formId) {
+            var oForm = document.getElementById(formId);
+            if (oForm) {
+                oForm.submit(); 
+            }
+            else {
+                alert("DEBUG - could not find element " + formId);
+            }
+        }
         
 
         

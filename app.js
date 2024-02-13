@@ -172,12 +172,11 @@ async function getFiles(dir) {
 async function getFolders(dir){
   return await fsp.readdir(dir, { recursive: true, withFileTypes: true }).then
   ((recherche) =>{
-    //filtrage par type : dossier
+    //filtrage par type : dossierkj
     recherche = recherche.filter(dirent => dirent.isDirectory());
     return recherche;
     
   })
   }
-
- 
+  
 
